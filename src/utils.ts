@@ -1,0 +1,10 @@
+import { exec } from 'child_process'
+
+export const run = (cmd: string): Promise<string> =>
+  new Promise((resolve, reject) => {
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) { return reject(err) }
+      if (stderr) { return reject(stderr) }
+      return resolve(stdout)
+    })
+  })
