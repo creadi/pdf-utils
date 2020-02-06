@@ -3,6 +3,7 @@ import _bufferToFile from './bufferToFile'
 import _extractText from './extractText'
 import _keepPages from './keepPages'
 import _merge from './merge'
+import _purgeTemp from './purgeTemp'
 import _removePages from './removePages'
 import _render from './render'
 
@@ -11,6 +12,7 @@ export const bufferToFile = _bufferToFile
 export const extractText = _extractText
 export const keepPages = _keepPages
 export const merge = _merge
+export const purgeTemp = _purgeTemp
 export const removePages = _removePages
 export const render = _render
 
@@ -20,6 +22,7 @@ export default {
   extractText,
   keepPages,
   merge,
+  purgeTemp,
   removePages,
   render,
 }

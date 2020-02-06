@@ -94,3 +94,12 @@ export interface AddTextData {
   }[]
 }
 ```
+
+### `purgeTemp`
+
+All of the above functions clean up temporary files if they tun successfully. This can be used in `catch` to clean up if something goes wrong
+
+```ts
+(tempFolder: string) => Promise<void>
+```
+
