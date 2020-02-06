@@ -103,3 +103,51 @@ All of the above functions clean up temporary files if they tun successfully. Th
 (tempFolder: string) => Promise<void>
 ```
 
+## Usage example
+
+This is the file I used to "test":
+
+```ts
+import {
+  addText,
+  merge,
+  bufferToFile,
+  removePages,
+  keepPages,
+  render,
+} from './src'
+import { resolve } from 'path'
+
+const file1 = resolve(__dirname, 'assets', 'xx.pdf')
+const file2 = resolve(__dirname, 'assets', 'original.pdf')
+const tempFolder = resolve(__dirname, 'temp')
+
+const tryMerge = async () => {
+  const buffer = await merge([file1, file2], tempFolder)
+  await bufferToFile(resolve(__dirname, 'merged.pdf'), buffer)
+}
+
+const tryRemovePages = async () => {
+  const buffer = await removePages(file2, [1, 2, 4], tempFolder)
+  await bufferToFile(resolve(__dirname, 'pagesRemoved.pdf'), buffer)
+}
+
+const tryKeepPages = async () => {
+  const buffer = await keepPages(file2, [2, 3, 8], tempFolder)
+  await bufferToFile(resolve(__dirname, 'pagesKept.pdf'), buffer)
+}
+
+const tryRender = async () => {
+  const dd = { content: ['First paragraph'] }
+  const buffer = await render(dd)
+  await bufferToFile(resolve(__dirname, 'rendered.pdf'), buffer)
+}
+
+const tryAddText = async () => {
+  const data = {"texts":[{"text":"Hello","coordinates":[30,50],"page":1},{"text":"world","coordinates":[30,100],"page":3,"fontSize":30}]}
+  const buffer = await addText(file2, data, tempFolder)
+  await bufferToFile(resolve(__dirname, 'withAddedText.pdf'), buffer)
+}
+
+tryAddText()
+```
