@@ -22,7 +22,7 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install nodejs -y
 ```
 
-## Usage
+## Functions
 
 ### `extractText`
 
@@ -52,3 +52,14 @@ Where `path` is where we want the file to be saved.
 
 Where `filePaths` is an array of paths to pdf files in the order they should be merged and `tempFolder` is an existing folder where temporary files can be stored.
 
+### `removePages`
+
+```ts
+(path: string, pagesToRemove: number[], tempFolder: string) => Promise<Buffer>
+```
+
+### `keepPages`
+
+```ts
+(path: string, pagesToKeep: number[], tempFolder: string) => Promise<Buffer>
+```
