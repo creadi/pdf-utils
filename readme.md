@@ -42,7 +42,7 @@ Where `path` is the path to the pdf we want to extract data from.
 (path: string, buffer: Buffer) => Promise<void>
 ```
 
-Where `path` is where we want the file to be saved.
+Where `path` is where you want the file to be saved.
 
 ### `merge`
 
@@ -72,3 +72,25 @@ Where `filePaths` is an array of paths to pdf files in the order they should be 
 
 Where `dd` is a [pdfmake document definition](https://pdfmake.github.io/docs/document-definition-object/). There are no usable types for it but an excellent typed library to generate them with JSX: [pdfmakejsx](https://www.npmjs.com/package/pdfmakejsx) :-D
 
+### `addText`
+
+```ts
+(path: string, body: AddTextData, tempFolder: string) => Promise<Buffer>
+```
+
+```ts
+export interface AddTextStyle {
+  font?: Font
+  fontSize?: number
+}
+
+export interface AddTextData {
+  style?: AddTextStyle
+  texts: {
+    coordinates: number[]
+    page: number
+    fontSize?: number
+    text: string
+  }[]
+}
+```
