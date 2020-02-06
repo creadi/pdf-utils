@@ -63,3 +63,12 @@ Where `filePaths` is an array of paths to pdf files in the order they should be 
 ```ts
 (path: string, pagesToKeep: number[], tempFolder: string) => Promise<Buffer>
 ```
+
+### `render`
+
+```ts
+(dd: any, font?: "Courier" | "Helvetica" | undefined) => Promise<Buffer>
+```
+
+Where `dd` is a [pdfmake document definition](https://pdfmake.github.io/docs/document-definition-object/). There are no usable types for it but an excellent typed library to generate them with JSX: [pdfmakejsx](https://www.npmjs.com/package/pdfmakejsx) :-D
+
