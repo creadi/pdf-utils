@@ -1,0 +1,68 @@
+import { run, read, extractPage } from './utils'
+import { resolve as resolvePath } from 'path'
+import { v4 } from 'uuid'
+import merge from './merge'
+
+interface Config {
+  newText: string
+  page?: number
+  textToReplace: string
+}
+
+const replaceText =  async (path: string, textToReplace: string, newText: string, tempFolder: string) => {
+  const id = v4()
+  const getFilePath = (prefix: string) => resolvePath(tempFolder, `${prefix}_${id}.pdf`)
+  const uncompressed = getFilePath(`uncompressed`)
+  const fixed = getFilePath(`fixed`)
+  const result = getFilePath(`result`)
+
+  // uncompress
+  await run(`pdftk ${path} output ${uncompressed} uncompress`)
+  // replace
+  await run(`sed -e "s/${textToReplace}/${newText}/g" < ${uncompressed} > ${fixed}`)
+  // compress
+  await run(`pdftk ${fixed} output ${result} compress`)
+
+  // clean up
+  await Promise.all([
+    await run(`rm ${uncompressed}`),
+    await run(`rm ${fixed}`),
+  ])
+
+  return result
+}
+
+export default async (
+  path: string,
+  { textToReplace, newText, page }: Config,
+  tempFolder: string
+) => {
+
+  if (!page) {
+    const result = await replaceText(path, textToReplace, newText, tempFolder)
+    const buffer = await read(result)
+    await run(`rm ${result}`)
+    return buffer
+  }
+
+  const {
+    pageSelected,
+    pagesAfter,
+    pagesBefore,
+  } = await extractPage(path, page, tempFolder)
+
+  const fixed = await replaceText(pageSelected, textToReplace, newText, tempFolder)
+  const buffer = await merge([
+    pagesBefore,
+    fixed,
+    pagesAfter,
+  ], tempFolder)
+  await Promise.all([
+    pageSelected,
+    pagesAfter,
+    pagesBefore,
+  ].map(d => run(`rm ${d}`)))
+
+  return buffer
+
+}

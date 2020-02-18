@@ -97,6 +97,20 @@ export interface AddTextData {
 
 ### `replaceText`
 
+```ts
+(path: string, config: Config, tempFolder: string) => Promise<Buffer>
+```
+
+```ts
+export interface Config {
+  newText: string
+  page?: number
+  textToReplace: string
+}
+```
+
+If `page` is defined text is only replaced on that page.
+
 ### `purgeTemp`
 
 All of the above functions clean up temporary files if they run successfully. This can be used in `catch` to clean up if something goes wrong
@@ -151,5 +165,12 @@ const tryAddText = async () => {
   await bufferToFile(resolve(__dirname, 'withAddedText.pdf'), buffer)
 }
 
-tryAddText()
+const tryReplaceText = async () => {
+  const textToReplace = 'Vorschlags-Nr. 55132'
+  const newText = 'Hello world'
+  const buffer = await replaceText(file2, textToReplace, newText, tempFolder)
+  await bufferToFile(resolve(__dirname, 'replaced_text.pdf'), buffer)
+}
+
+tryReplaceText()
 ```
