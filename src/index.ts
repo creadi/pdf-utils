@@ -1,4 +1,5 @@
 import _addImage from './addImage'
+import _addRect from './addRect'
 import _addText from './addText'
 import _bufferToFile from './bufferToFile'
 import _countPages from './countPages'
@@ -11,6 +12,7 @@ import _render from './render'
 import _replaceText from './replaceText'
 
 export const addImage = _addImage
+export const addRect = _addRect
 export const addText = _addText
 export const bufferToFile = _bufferToFile
 export const countPages = _countPages
@@ -24,6 +26,7 @@ export const replaceText = _replaceText
 
 export default {
   addImage,
+  addRect,
   addText,
   bufferToFile,
   countPages,
