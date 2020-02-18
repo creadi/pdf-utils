@@ -4,7 +4,7 @@ import { run, read, writeBuffer, extractPage } from '../utils'
 import createOverlay from './createOverlay'
 import merge from '../merge'
 
-interface AddImageConfig {
+interface AddRectConfig {
   color?: string
   height: number
   page?: number
@@ -22,7 +22,7 @@ export default async (
     width,
     x,
     y,
-  }: AddImageConfig,
+  }: AddRectConfig,
   tempFolder: string
 ) => {
 

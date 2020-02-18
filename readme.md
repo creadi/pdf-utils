@@ -111,6 +111,44 @@ export interface Config {
 
 If `page` is defined text is only replaced on that page.
 
+### `addImage`
+
+```ts
+(path: string, { height, imagePath, page, width, x, y, }: AddImageConfig, tempFolder: string) => Promise<Buffer>
+```
+
+```ts
+interface AddImageConfig {
+  height: number
+  imagePath: string
+  page?: number
+  width: number
+  x: number
+  y: number
+}
+```
+
+If `page` is defined text is only replaced on that page.
+
+### `addRect`
+
+```ts
+(path: string, { height, color, page, width, x, y, }: AddRectConfig, tempFolder: string) => Promise<Buffer>
+```
+
+```ts
+interface AddRectConfig {
+  color?: string
+  height: number
+  page?: number
+  width: number
+  x: number
+  y: number
+}
+```
+
+If `page` is defined text is only replaced on that page.
+
 ### `purgeTemp`
 
 All of the above functions clean up temporary files if they run successfully. This can be used in `catch` to clean up if something goes wrong
