@@ -95,9 +95,63 @@ export interface AddTextData {
 }
 ```
 
+### `replaceText`
+
+```ts
+(path: string, config: Config, tempFolder: string) => Promise<Buffer>
+```
+
+```ts
+export interface Config {
+  newText: string
+  page?: number
+  textToReplace: string
+}
+```
+
+If `page` is defined text is only replaced on that page.
+
+### `addImage`
+
+```ts
+(path: string, { height, imagePath, page, width, x, y, }: AddImageConfig, tempFolder: string) => Promise<Buffer>
+```
+
+```ts
+interface AddImageConfig {
+  height: number
+  imagePath: string
+  page?: number
+  width: number
+  x: number
+  y: number
+}
+```
+
+If `page` is defined text is only replaced on that page.
+
+### `addRect`
+
+```ts
+(path: string, { height, color, page, width, x, y, }: AddRectConfig, tempFolder: string) => Promise<Buffer>
+```
+
+```ts
+interface AddRectConfig {
+  color?: string
+  height: number
+  page?: number
+  width: number
+  x: number
+  y: number
+}
+```
+
+If `page` is defined text is only replaced on that page.
+
 ### `purgeTemp`
 
-All of the above functions clean up temporary files if they tun successfully. This can be used in `catch` to clean up if something goes wrong
+All of the above functions clean up temporary files if they run successfully. This can be used in `catch` to clean up if something goes wrong
 
 ```ts
 (tempFolder: string) => Promise<void>
@@ -149,5 +203,12 @@ const tryAddText = async () => {
   await bufferToFile(resolve(__dirname, 'withAddedText.pdf'), buffer)
 }
 
-tryAddText()
+const tryReplaceText = async () => {
+  const textToReplace = 'Vorschlags-Nr. 55132'
+  const newText = 'Hello world'
+  const buffer = await replaceText(file2, textToReplace, newText, tempFolder)
+  await bufferToFile(resolve(__dirname, 'replaced_text.pdf'), buffer)
+}
+
+tryReplaceText()
 ```
