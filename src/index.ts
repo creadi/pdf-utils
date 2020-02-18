@@ -1,3 +1,4 @@
+import _addImage from './addImage'
 import _addText from './addText'
 import _bufferToFile from './bufferToFile'
 import _countPages from './countPages'
@@ -9,6 +10,7 @@ import _removePages from './removePages'
 import _render from './render'
 import _replaceText from './replaceText'
 
+export const addImage = _addImage
 export const addText = _addText
 export const bufferToFile = _bufferToFile
 export const countPages = _countPages
@@ -21,6 +23,7 @@ export const render = _render
 export const replaceText = _replaceText
 
 export default {
+  addImage,
   addText,
   bufferToFile,
   countPages,
