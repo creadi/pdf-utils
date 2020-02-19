@@ -5,7 +5,7 @@ import getImage from './getImage'
 import createOverlay from './createOverlay'
 import merge from '../merge'
 
-interface AddImageConfig {
+export interface AddImageConfig {
   height: number
   imagePath: string
   page?: number
@@ -15,7 +15,7 @@ interface AddImageConfig {
 }
 
 export default async (
-  path: string,
+  tempFolder: string,
   {
     height,
     imagePath,
@@ -24,7 +24,7 @@ export default async (
     x,
     y,
   }: AddImageConfig,
-  tempFolder: string
+  path: string,
 ) => {
 
   const id = v4()

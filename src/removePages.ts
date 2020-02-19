@@ -8,7 +8,7 @@ const getPagesToKeep = (pages: number[]) =>
     .filter(d => !pages.includes(d))
     .join(' ') + '-end'
 
-export default async (path: string, pagesToRemove: number[], tempFolder: string) => {
+export default async (tempFolder: string, pagesToRemove: number[], path: string) => {
   const resultName = v4()
   const pathToResult = resolvePath(tempFolder, `${resultName}.pdf`)
   await run(`pdftk ${path} cat ${getPagesToKeep(pagesToRemove)} output ${pathToResult}`)

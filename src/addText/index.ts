@@ -4,6 +4,8 @@ import { run, read } from '../utils'
 import createOverlays from './createOverlays'
 import { AddTextData } from './types'
 
+export type AddTextConfig = AddTextData
+
 interface P {page: number, overlayPage?: string}
 
 const fixPage = (pdfPath: string, dir: string) => async ({ page, overlayPage }: P) => {
@@ -23,7 +25,7 @@ const stitchPages = async (dir: string, allPages: number[]) => {
   return await read(result)
 }
 
-export default async (path: string, body: AddTextData, tempFolder: string) => {
+export default async (tempFolder: string, body: AddTextData, path: string) => {
   const dir = resolvePath(tempFolder, v4())
   await run(`mkdir ${dir}`)
   const { totalPages, overlays } = await createOverlays(path, body)
@@ -35,4 +37,3 @@ export default async (path: string, body: AddTextData, tempFolder: string) => {
   await run(`rm -rf ${dir}`)
   return buffer
 }
-

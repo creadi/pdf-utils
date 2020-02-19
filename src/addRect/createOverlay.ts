@@ -9,11 +9,17 @@ export default async (
 ): Promise<Buffer> => {
   const dd = {
     content: [{
-      svg: `<svg viewBox="0 0 ${width} ${height}"><rect width="${width}" height="${height}" fill="${color}" /></svg>`,
-      width,
-      height,
-      absolutPosition: { x, y }
-    }]
+      canvas: [{
+        type: 'rect',
+        x,
+        y,
+        w: width,
+        h: height,
+        color,
+      }],
+      absolutePosition: { x: 0, y: 0 },
+
+    }],
   }
   return await render(dd)
 }

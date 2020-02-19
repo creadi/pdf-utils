@@ -22,61 +22,108 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install nodejs -y
 ```
 
+## Initialize to avoid repeating `tempFolder`
+
+`init()` takes the path to the temporary folder as argument and returns all the functions as below but curried and with `tempFolder` already set.
+
+### Example use
+
+```ts
+import { init } from './index'
+
+const tempFolder = `${__dirname}/temp`
+
+
+const fixPolicy = await (inputPath: string, outputPath: string) => {
+
+  const { removePages, addRect, addImage, replaceText, bufferToFile } = init(tempFolder)
+
+  const removePage10 = removePages([10])
+
+  const hidePaxLogo = addRect({
+    width: 100,
+    height: 40,
+    x: 470,
+    y: 25,
+  })
+
+  const addCreadiLogo = addImage({
+    imagePath: image,
+    width: 100,
+    height: 40,
+    x: 470,
+    y: 25,
+  })
+
+  const replacePaxWithCreadi = replaceText({
+    textToReplace: 'Pax, Schweizerische Lebensversicherungs-Gesellschaft AG',
+    newText: 'Creadi AG',
+  })
+
+  const buffer = await pipeP(
+    removePage10,
+    hidePaxLogo,
+    addCreadiLogo,
+    replacePaxWithCreadi,
+  )(inputPath)
+
+  await bufferToFile(outputPath, buffer)
+
+}
+
+fixPolicy(
+  `${__dirname}/pax_policy.pdf`,
+  `${__dirname}/creadi_policy.pdf`
+)
+```
+
 ## Functions
 
-### `extractText`
+For most of the following functions the input `pdf` can be the path to a pdf file or a buffer.
 
 ```ts
-(path: string) => Promise<{
-  page: number;
-  text: string;
-  size: number[];
-}[]>
+type PathOrBuffer = string | Buffer
 ```
 
-Where `path` is the path to the pdf we want to extract data from.
-
-### `bufferToFile`
+### `addImage`
 
 ```ts
-(path: string, buffer: Buffer) => Promise<void>
+export interface AddImageConfig {
+  height: number
+  imagePath: string
+  page?: number
+  width: number
+  x: number
+  y: number
+}
+
+addImage: (tempFolder: string, config: AddImageConfig, pdf: PathOrBuffer) => Promise<Buffer>
 ```
 
-Where `path` is where you want the file to be saved.
+If `config.page` is defined, the image will only be added to that page. Otherwise it will be added to all pages.
 
-### `merge`
+### `addRect`
+
+Add a rectangle to hide previous content.
 
 ```ts
-(filePaths: string[], tempFolder: string) => Promise<Buffer>
+export interface AddRectConfig {
+  color?: string
+  height: number
+  page?: number
+  width: number
+  x: number
+  y: number
+}
+
+addRect: (tempFolder: string, config: AddRectConfig, pdf: PathOrBuffer) => Promise<Buffer>
 ```
 
-Where `filePaths` is an array of paths to pdf files in the order they should be merged and `tempFolder` is an existing folder where temporary files can be stored.
+If `config.color` is not defined, defaults to `white`.
 
-### `removePages`
-
-```ts
-(path: string, pagesToRemove: number[], tempFolder: string) => Promise<Buffer>
-```
-
-### `keepPages`
-
-```ts
-(path: string, pagesToKeep: number[], tempFolder: string) => Promise<Buffer>
-```
-
-### `render`
-
-```ts
-(dd: any, font?: "Courier" | "Helvetica" | undefined) => Promise<Buffer>
-```
-
-Where `dd` is a [pdfmake document definition](https://pdfmake.github.io/docs/document-definition-object/). There are no usable types for it but an excellent typed library to generate them with JSX: [pdfmakejsx](https://www.npmjs.com/package/pdfmakejsx) :-D
+If `config.page` is defined, the image will only be added to that page. Otherwise it will be added to all pages.
 
 ### `addText`
-
-```ts
-(path: string, body: AddTextData, tempFolder: string) => Promise<Buffer>
-```
 
 ```ts
 export interface AddTextStyle {
@@ -84,7 +131,7 @@ export interface AddTextStyle {
   fontSize?: number
 }
 
-export interface AddTextData {
+export interface AddTextConfig {
   style?: AddTextStyle
   texts: {
     coordinates: number[]
@@ -93,122 +140,83 @@ export interface AddTextData {
     text: string
   }[]
 }
+
+addText: (tempFolder: string, config: AddTextConfig, pdf: PathOrBuffer) => Promise<Buffer>
 ```
+
+### `bufferToFile`
+
+Save a buffer to a file
+
+```ts
+bufferToFile: (outputPath: string, buffer: Buffer) => Promise<void>
+```
+
+### `countPages`
+
+```ts
+(pdf: PathOrBuffer, tempFolder?: string | undefined) => Promise<number>
+```
+
+`tempFolder` only needs to be passed if `pdf` is a buffer. It will throw an error if `pdf` is a buffer and `tempFolder` is undefined.
+
+### `extractText`
+
+```ts
+interface Text {
+  page: number
+  text: string
+  size: number[]
+}
+
+extractText: (pdf: PathOrBuffer, tempFolder?: string | undefined) => Promise<Text[]>
+```
+
+`tempFolder` only needs to be passed if `pdf` is a buffer. It will throw an error if `pdf` is a buffer and `tempFolder` is undefined.
+
+### `keepPages`
+
+```ts
+keepPages: (tempFolder: string, pagesToKeep: number[], pdf: PathOrBuffer) => Promise<Buffer>
+```
+
+### `merge`
+
+```ts
+merge: (filePaths: string[], tempFolder: string) => Promise<Buffer>
+```
+
+### `purgeTemp`
+
+All functions clean up temporary files if they run successfully. This should be used in `catch` to clean up if something goes wrong
+
+```ts
+purgeTemp: (tempFolder: string) => Promise<void>
+```
+
+### `removePages`
+
+```ts
+removePages: (tempFolder: string, pagesToRemove: number[], pdf: PathOrBuffer) => Promise<Buffer>
+```
+
+### `render`
+
+```ts
+render: (dd: any, font?: "Courier" | "Helvetica" | undefined) => Promise<Buffer>
+```
+
+Where `dd` is a [pdfmake document definition](https://pdfmake.github.io/docs/document-definition-object/). There are no usable types for it but an excellent typed library to generate them with JSX: [pdfmakejsx](https://www.npmjs.com/package/pdfmakejsx) :-D
 
 ### `replaceText`
 
 ```ts
-(path: string, config: Config, tempFolder: string) => Promise<Buffer>
-```
-
-```ts
-export interface Config {
+export interface ReplaceTextConfig {
   newText: string
   page?: number
   textToReplace: string
 }
-```
 
-If `page` is defined text is only replaced on that page.
 
-### `addImage`
-
-```ts
-(path: string, { height, imagePath, page, width, x, y, }: AddImageConfig, tempFolder: string) => Promise<Buffer>
-```
-
-```ts
-interface AddImageConfig {
-  height: number
-  imagePath: string
-  page?: number
-  width: number
-  x: number
-  y: number
-}
-```
-
-If `page` is defined text is only replaced on that page.
-
-### `addRect`
-
-```ts
-(path: string, { height, color, page, width, x, y, }: AddRectConfig, tempFolder: string) => Promise<Buffer>
-```
-
-```ts
-interface AddRectConfig {
-  color?: string
-  height: number
-  page?: number
-  width: number
-  x: number
-  y: number
-}
-```
-
-If `page` is defined text is only replaced on that page.
-
-### `purgeTemp`
-
-All of the above functions clean up temporary files if they run successfully. This can be used in `catch` to clean up if something goes wrong
-
-```ts
-(tempFolder: string) => Promise<void>
-```
-
-## Usage example
-
-This is the file I used to "test":
-
-```ts
-import {
-  addText,
-  merge,
-  bufferToFile,
-  removePages,
-  keepPages,
-  render,
-} from './src'
-import { resolve } from 'path'
-
-const file1 = resolve(__dirname, 'assets', 'xx.pdf')
-const file2 = resolve(__dirname, 'assets', 'original.pdf')
-const tempFolder = resolve(__dirname, 'temp')
-
-const tryMerge = async () => {
-  const buffer = await merge([file1, file2], tempFolder)
-  await bufferToFile(resolve(__dirname, 'merged.pdf'), buffer)
-}
-
-const tryRemovePages = async () => {
-  const buffer = await removePages(file2, [1, 2, 4], tempFolder)
-  await bufferToFile(resolve(__dirname, 'pagesRemoved.pdf'), buffer)
-}
-
-const tryKeepPages = async () => {
-  const buffer = await keepPages(file2, [2, 3, 8], tempFolder)
-  await bufferToFile(resolve(__dirname, 'pagesKept.pdf'), buffer)
-}
-
-const tryRender = async () => {
-  const dd = { content: ['First paragraph'] }
-  const buffer = await render(dd)
-  await bufferToFile(resolve(__dirname, 'rendered.pdf'), buffer)
-}
-
-const tryAddText = async () => {
-  const data = {"texts":[{"text":"Hello","coordinates":[30,50],"page":1},{"text":"world","coordinates":[30,100],"page":3,"fontSize":30}]}
-  const buffer = await addText(file2, data, tempFolder)
-  await bufferToFile(resolve(__dirname, 'withAddedText.pdf'), buffer)
-}
-
-const tryReplaceText = async () => {
-  const textToReplace = 'Vorschlags-Nr. 55132'
-  const newText = 'Hello world'
-  const buffer = await replaceText(file2, textToReplace, newText, tempFolder)
-  await bufferToFile(resolve(__dirname, 'replaced_text.pdf'), buffer)
-}
-
-tryReplaceText()
+replaceText: (tempFolder: string, config: ReplaceTextConfig, pdf: PathOrBuffer) => Promise<Buffer>
 ```
