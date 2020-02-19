@@ -10,9 +10,8 @@ export default async (
   const dd = {
     content: [{
       image: imageBase64,
-      width,
-      height,
-      absolutPosition: { x, y }
+      fit: [width, height],
+      absolutePosition: { x, y },
     }]
   }
   return await render(dd)

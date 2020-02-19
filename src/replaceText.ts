@@ -3,7 +3,7 @@ import { resolve as resolvePath } from 'path'
 import { v4 } from 'uuid'
 import merge from './merge'
 
-interface Config {
+export interface ReplaceTextConfig {
   newText: string
   page?: number
   textToReplace: string
@@ -33,9 +33,9 @@ const replaceText =  async (path: string, textToReplace: string, newText: string
 }
 
 export default async (
-  path: string,
-  { textToReplace, newText, page }: Config,
-  tempFolder: string
+  tempFolder: string,
+  { textToReplace, newText, page }: ReplaceTextConfig,
+  path: string
 ) => {
 
   if (!page) {

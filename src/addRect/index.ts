@@ -4,7 +4,7 @@ import { run, read, writeBuffer, extractPage } from '../utils'
 import createOverlay from './createOverlay'
 import merge from '../merge'
 
-interface AddRectConfig {
+export interface AddRectConfig {
   color?: string
   height: number
   page?: number
@@ -14,7 +14,7 @@ interface AddRectConfig {
 }
 
 export default async (
-  path: string,
+  tempFolder: string,
   {
     height,
     color,
@@ -23,7 +23,7 @@ export default async (
     x,
     y,
   }: AddRectConfig,
-  tempFolder: string
+  path: string,
 ) => {
 
   const id = v4()
