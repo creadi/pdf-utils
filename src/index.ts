@@ -19,9 +19,9 @@ type PathOrBuffer = string | Buffer
 
 const isBuffer = (d: PathOrBuffer): d is Buffer => Buffer.isBuffer(d)
 
-type Func<T> = (tempFolder: string, config: T, path: string) => Promise<Buffer>
+type FuncWithConfig<T> = (tempFolder: string, config: T, path: string) => Promise<Buffer>
 
-const maybeFromBuffer = <T>(func: Func<T>) => async(
+const maybeFromBufferWithConfig = <T>(func: FuncWithConfig<T>) => async(
   tempFolder: string,
   config: T,
   pdf: PathOrBuffer
@@ -36,18 +36,34 @@ const maybeFromBuffer = <T>(func: Func<T>) => async(
   return await func(tempFolder, config, pdf)
 }
 
-export const addImage = maybeFromBuffer<AddImageConfig>(_addImage)
-export const addRect = maybeFromBuffer<AddRectConfig>(_addRect)
-export const addText = maybeFromBuffer<AddTextConfig>(_addText)
+type Func<T> = (path: string) => Promise<T>
+
+const maybeFromBuffer = <T>(func: Func<T>) => async (pdf: PathOrBuffer, tempFolder?: string): Promise<T> => {
+  if (isBuffer(pdf)) {
+    if (tempFolder) {
+      const path = resolvePath(tempFolder, `${v4()}.pdf`)
+      await writeBuffer(path, pdf)
+      const result = await func(path)
+      await run(`rm ${path}`)
+      return result
+    }
+    throw new Error('tempFolder needs to be defined if passing a buffer')
+  }
+  return await func(pdf)
+}
+
+export const addImage = maybeFromBufferWithConfig<AddImageConfig>(_addImage)
+export const addRect = maybeFromBufferWithConfig<AddRectConfig>(_addRect)
+export const addText = maybeFromBufferWithConfig<AddTextConfig>(_addText)
 export const bufferToFile = _bufferToFile
-export const countPages = _countPages
-export const extractText = _extractText
-export const keepPages = maybeFromBuffer<number[]>(_keepPages)
+export const countPages = maybeFromBuffer(_countPages)
+export const extractText = maybeFromBuffer(_extractText)
+export const keepPages = maybeFromBufferWithConfig<number[]>(_keepPages)
 export const merge = _merge
 export const purgeTemp = _purgeTemp
-export const removePages = maybeFromBuffer<number[]>(_removePages)
+export const removePages = maybeFromBufferWithConfig<number[]>(_removePages)
 export const render = _render
-export const replaceText = maybeFromBuffer<ReplaceTextConfig>(_replaceText)
+export const replaceText = maybeFromBufferWithConfig<ReplaceTextConfig>(_replaceText)
 
 export const init = (pathToTempFolder: string) => {
   const tempFolder = pathToTempFolder
@@ -56,8 +72,8 @@ export const init = (pathToTempFolder: string) => {
     addRect: curry(addRect)(tempFolder),
     addText: curry(addText)(tempFolder),
     bufferToFile: curry((path: string, buffer: Buffer) => bufferToFile(path, buffer)),
-    countPages,
-    extractText,
+    countPages: (pdf: PathOrBuffer) => countPages(pdf, tempFolder),
+    extractText: (pdf: PathOrBuffer) => extractText(pdf, tempFolder),
     keepPages: curry(keepPages)(tempFolder),
     merge: (filePaths: string[]) => merge(filePaths, tempFolder),
     purgeTemp: () => purgeTemp(tempFolder),
