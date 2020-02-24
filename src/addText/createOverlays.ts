@@ -1,6 +1,6 @@
 import { pathOr, uniq, propEq, prop, propOr } from 'ramda'
 import { parse as parsePath } from 'path'
-import { AddTextData, AddTextStyle, PageDefinition } from './types'
+import { AddTextData, AddTextStyle, PageDefinition } from './'
 import render from '../render'
 import extractText from '../extractText'
 import { writeBuffer } from '../utils'
