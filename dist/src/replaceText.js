@@ -43,7 +43,6 @@ var utils_1 = require("./utils");
 var path_1 = require("path");
 var uuid_1 = require("uuid");
 var merge_1 = __importDefault(require("./merge"));
-var isString = function (d) { return Boolean(d); };
 var replaceText = function (path, textToReplace, newText, tempFolder) { return __awaiter(void 0, void 0, void 0, function () {
     var id, getFilePath, uncompressed, fixed, result, _a, _b, _c;
     return __generator(this, function (_d) {
@@ -122,7 +121,7 @@ exports.default = (function (tempFolder, _a, path) {
                             pagesBefore,
                             fixed,
                             pagesAfter,
-                        ].filter(isString), tempFolder)];
+                        ], tempFolder)];
                 case 7:
                     buffer = _c.sent();
                     return [4 /*yield*/, Promise.all([
