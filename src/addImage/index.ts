@@ -14,6 +14,8 @@ export interface AddImageConfig {
   y: number
 }
 
+const isString = (d: string | undefined): d is string => Boolean(d)
+
 export default async (
   tempFolder: string,
   {
@@ -55,7 +57,7 @@ export default async (
     pagesBefore,
     fixed,
     pagesAfter,
-  ], tempFolder)
+  ].filter(isString), tempFolder)
   await Promise.all([
     pageSelected,
     pagesAfter,

@@ -9,6 +9,8 @@ export interface ReplaceTextConfig {
   textToReplace: string
 }
 
+const isString = (d: string | undefined): d is string => Boolean(d)
+
 const replaceText =  async (path: string, textToReplace: string, newText: string, tempFolder: string) => {
   const id = v4()
   const getFilePath = (prefix: string) => resolvePath(tempFolder, `${prefix}_${id}.pdf`)
@@ -56,7 +58,7 @@ export default async (
     pagesBefore,
     fixed,
     pagesAfter,
-  ], tempFolder)
+  ].filter(isString), tempFolder)
   await Promise.all([
     pageSelected,
     pagesAfter,
