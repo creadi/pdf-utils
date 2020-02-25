@@ -63,5 +63,9 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": ["./try.ts"]
+  "exclude": [
+    "./try.ts",
+    "node_modules",
+    "dist"
+  ]
 }
