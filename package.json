@@ -1,11 +1,11 @@
 {
   "name": "pdf-utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "ava",
+    "test": "ava --verbose",
     "build": "tsc"
   },
   "keywords": [],

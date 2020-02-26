@@ -1,4 +1,4 @@
-import { parse as parsePath, resolve as resolvePath } from 'path'
+import { resolve as resolvePath } from 'path'
 import { v4 } from 'uuid'
 import { run, read } from '../utils'
 import createOverlays from './createOverlays'
