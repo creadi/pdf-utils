@@ -8,9 +8,7 @@ import { writeBuffer } from '../utils'
 const renderPage = (style: AddTextStyle) => async ({ filePath, documentDefinition }: PageDefinition) =>
   writeBuffer(filePath, await render(documentDefinition, style.font))
 
-export default async (path: string, data: AddTextData) => {
-
-  const { dir } = parsePath(path)
+export default async (dir: string, path: string, data: AddTextData) => {
 
   const defaultStyle: AddTextStyle = {
     font: pathOr('Helvetica', ['style', 'font'], data),

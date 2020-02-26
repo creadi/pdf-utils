@@ -1,5 +1,5 @@
 import { AddTextData } from './';
-declare const _default: (path: string, data: AddTextData) => Promise<{
+declare const _default: (dir: string, path: string, data: AddTextData) => Promise<{
     totalPages: number;
     overlays: {
         page: number;
