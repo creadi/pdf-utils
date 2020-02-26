@@ -49,7 +49,7 @@ const stitchPages = async (dir: string, allPages: number[]) => {
 export default async (tempFolder: string, body: AddTextData, path: string) => {
   const dir = resolvePath(tempFolder, v4())
   await run(`mkdir ${dir}`)
-  const { totalPages, overlays } = await createOverlays(path, body)
+  const { totalPages, overlays } = await createOverlays(dir, path, body)
   const allPages = Array.from(Array(totalPages)).map((d, i) => i + 1)
   const allPagesWithOverlay: P[] = allPages
     .map(page => ({ page, overlayPage: overlays.find(d => d.page === page)?.filePath }))
