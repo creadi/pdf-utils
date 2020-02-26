@@ -40,7 +40,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var ramda_1 = require("ramda");
-var path_1 = require("path");
 var render_1 = __importDefault(require("../render"));
 var extractText_1 = __importDefault(require("../extractText"));
 var utils_1 = require("../utils");
@@ -56,12 +55,11 @@ var renderPage = function (style) { return function (_a) {
         }
     }); });
 }; };
-exports.default = (function (path, data) { return __awaiter(void 0, void 0, void 0, function () {
-    var dir, defaultStyle, pageContent, totalPages, getSize, pageNumbers, pages;
+exports.default = (function (dir, path, data) { return __awaiter(void 0, void 0, void 0, function () {
+    var defaultStyle, pageContent, totalPages, getSize, pageNumbers, pages;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                dir = path_1.parse(path).dir;
                 defaultStyle = {
                     font: ramda_1.pathOr('Helvetica', ['style', 'font'], data),
                     fontSize: ramda_1.pathOr(12, ['style', 'fontSize'], data),

@@ -93,7 +93,7 @@ exports.default = (function (tempFolder, body, path) { return __awaiter(void 0, 
                 return [4 /*yield*/, utils_1.run("mkdir " + dir)];
             case 1:
                 _b.sent();
-                return [4 /*yield*/, createOverlays_1.default(path, body)];
+                return [4 /*yield*/, createOverlays_1.default(dir, path, body)];
             case 2:
                 _a = _b.sent(), totalPages = _a.totalPages, overlays = _a.overlays;
                 allPages = Array.from(Array(totalPages)).map(function (d, i) { return i + 1; });
