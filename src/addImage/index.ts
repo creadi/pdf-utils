@@ -64,7 +64,7 @@ export default async (
     pagesBefore,
     fixed,
     overlay,
-  ].map(d => run(`rm ${d}`)))
+  ].map(d => d && run(`rm ${d}`)))
 
   return buffer
 }
