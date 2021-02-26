@@ -1,7 +1,7 @@
-import { run, read, extractPage } from './utils'
 import { resolve as resolvePath } from 'path'
 import { v4 } from 'uuid'
 import merge from './merge'
+import { extractPage, read, run } from './utils'
 
 export interface ReplaceTextConfig {
   newText: string
@@ -10,6 +10,10 @@ export interface ReplaceTextConfig {
 }
 
 const isString = (d: string | undefined): d is string => Boolean(d)
+
+function isRunningOnMac() {
+  return process.platform === 'darwin'
+}
 
 const replaceText =  async (path: string, textToReplace: string, newText: string, tempFolder: string) => {
   const id = v4()
@@ -21,7 +25,12 @@ const replaceText =  async (path: string, textToReplace: string, newText: string
   // uncompress
   await run(`pdftk ${path} output ${uncompressed} uncompress`)
   // replace
-  await run(`sed -e "s/${textToReplace}/${newText}/g" < ${uncompressed} > ${fixed}`)
+  let sedCommand = `sed -e "s/${textToReplace}/${newText}/g" < ${uncompressed} > ${fixed}`
+  if (isRunningOnMac()) {
+    console.debug('Runninc on a Mac. Prefixing sed command with "LC_ALL=C"')
+    sedCommand = `LC_ALL=C ${sedCommand}`
+  }
+  await run(sedCommand)
   // compress
   await run(`pdftk ${fixed} output ${result} compress`)
 
