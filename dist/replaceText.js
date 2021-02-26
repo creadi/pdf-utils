@@ -39,13 +39,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = require("./utils");
 var path_1 = require("path");
 var uuid_1 = require("uuid");
 var merge_1 = __importDefault(require("./merge"));
+var utils_1 = require("./utils");
 var isString = function (d) { return Boolean(d); };
+function isRunningOnMac() {
+    return process.platform === 'darwin';
+}
 var replaceText = function (path, textToReplace, newText, tempFolder) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, getFilePath, uncompressed, fixed, result, _a, _b, _c;
+    var id, getFilePath, uncompressed, fixed, result, sedCommand, _a, _b, _c;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
@@ -61,12 +64,15 @@ var replaceText = function (path, textToReplace, newText, tempFolder) { return _
             case 1:
                 // uncompress
                 _d.sent();
-                // replace
-                return [4 /*yield*/, utils_1.run("sed -e \"s/" + textToReplace + "/" + newText + "/g\" < " + uncompressed + " > " + fixed)
+                sedCommand = "sed -e \"s/" + textToReplace + "/" + newText + "/g\" < " + uncompressed + " > " + fixed;
+                if (isRunningOnMac()) {
+                    console.debug('Runninc on a Mac. Prefixing sed command with "LC_ALL=C"');
+                    sedCommand = "LC_ALL=C " + sedCommand;
+                }
+                return [4 /*yield*/, utils_1.run(sedCommand)
                     // compress
                 ];
             case 2:
-                // replace
                 _d.sent();
                 // compress
                 return [4 /*yield*/, utils_1.run("pdftk " + fixed + " output " + result + " compress")
